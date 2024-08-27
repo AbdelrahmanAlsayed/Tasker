@@ -2,6 +2,8 @@
 
 import createSupabaseServerClient from "@/lib/supabase/server";
 import { CreateUserInput, LoginUserInput } from "@/lib/user-schema";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
 export async function signUpWithEmailAndPassword({
   data,
@@ -28,4 +30,10 @@ export async function signInWithEmailAndPassword(data: LoginUserInput) {
     password: data.password,
   });
   return JSON.stringify(result);
+}
+
+export async function signOut() {
+  const supabase = createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
 }

@@ -1,15 +1,13 @@
 import Link from "next/link";
-import getUserSession from "@/lib/getUserSession";
-import createSupabaseServerClient from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
+import { signOut } from "@/app/_actions";
 
 const Header = async () => {
-  const { data } = await getUserSession();
+  const supabase = await createClient();
 
-  const logoutAction = async () => {
-    "use server";
-    const supabase = await createSupabaseServerClient();
-    await supabase.auth.signOut();
-  };
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <header className="bg-white h-20">
@@ -20,12 +18,25 @@ const Header = async () => {
           </Link>
         </div>
         <ul className="flex items-center space-x-4">
-          <li>
-            <Link href="/" className="text-ct-dark-600">
-              Home
-            </Link>
-          </li>
-          {!data.session && (
+          {user ? (
+            <>
+              <li>
+                <Link href="/profile" className="text-ct-dark-600">
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Link href="/todos" className="text-ct-dark-600">
+                  Todos
+                </Link>
+              </li>
+              <li>
+                <form action={signOut}>
+                  <button className="ml-4 text-ct-dark-600">Logout</button>
+                </form>
+              </li>
+            </>
+          ) : (
             <>
               <li>
                 <Link href="/register" className="text-ct-dark-600">
@@ -38,18 +49,6 @@ const Header = async () => {
                 </Link>
               </li>
             </>
-          )}
-          {data.session && (
-            <form action={logoutAction} className="flex">
-              <li>
-                <Link href="/profile" className="text-ct-dark-600">
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <button className="ml-4">Logout</button>
-              </li>
-            </form>
           )}
         </ul>
       </nav>
