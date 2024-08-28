@@ -4,11 +4,11 @@ Tasker is a collaborative to-do list application that allows users to efficientl
 
 ## Setup and Installation
 
-To set up and run the application locally, follow these steps:
+To set up and run the application locally, follow these steps :
 
 ## Installation
 
-To set up and run Tasker locally, follow these steps:
+To set up and run Tasker locally, follow these steps :
 
 ```bash
 
