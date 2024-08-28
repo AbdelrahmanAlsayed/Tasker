@@ -14,21 +14,42 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
+  const formatDate = (dateString?: string) => {
+    return dateString ? new Date(dateString).toLocaleDateString() : "N/A";
+  };
+
   return (
-    <section className="min-h-screen p-20 flex justify-center items-center">
-      <div>
-        <div>
-          <p className="mb-3 text-5xl text-center font-semibold">
-            Profile Page
+    <section className="p-6 md:p-12 flex flex-col items-center">
+      <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
+        <h1 className="text-3xl font-semibold mb-6 text-center">
+          Profile Page
+        </h1>
+        <div className="flex flex-col space-y-4">
+          <p className="text-lg font-semibold">
+            {user.user_metadata.full_name}
           </p>
-          <div className="mt-8">
-            <p className="mb-3">Id: {user.id}</p>
-            <p className="mb-3">Audience: {user.aud}</p>
-            <p className="mb-3">Role: {user.role}</p>
-            <p className="mb-3">Email: {user.email}</p>
-            <p className="mb-3">Provider: {user.app_metadata.provider}</p>
-            <p className="mb-3">Created At: {user.created_at}</p>
-          </div>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Username:</strong> {user.user_metadata.user_name}
+          </p>
+          <p>
+            <strong>Provider:</strong> {user.app_metadata.provider}
+          </p>
+          <p>
+            <strong>Last Sign-In:</strong> {formatDate(user.last_sign_in_at)}
+          </p>
+          <p>
+            <strong>Created At:</strong> {formatDate(user.created_at)}
+          </p>
+          <p>
+            <strong>Confirmed At:</strong> {formatDate(user.confirmed_at)}
+          </p>
+          <p>
+            <strong>Email Confirmed At:</strong>{" "}
+            {formatDate(user.email_confirmed_at)}
+          </p>
         </div>
       </div>
     </section>

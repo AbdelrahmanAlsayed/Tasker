@@ -10,8 +10,8 @@ const Header = async () => {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="bg-white h-20">
-      <nav className="h-full flex justify-between container items-center">
+    <header className="border-b border-gray-200 bg-white shadow-md">
+      <nav className="container mx-auto flex justify-between items-center py-4 px-6 md:px-8">
         <div>
           <Link href="/" className="text-ct-dark-600 text-2xl font-semibold">
             Tasker
@@ -21,30 +21,48 @@ const Header = async () => {
           {user ? (
             <>
               <li>
-                <Link href="/profile" className="text-ct-dark-600">
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link href="/todos" className="text-ct-dark-600">
+                <Link
+                  href="/todos"
+                  className="text-ct-dark-600 hover:underline text-[17px]"
+                >
                   Todos
                 </Link>
               </li>
               <li>
+                <Link
+                  href="/profile"
+                  className="text-ct-dark-600 hover:underline"
+                >
+                  Profile
+                </Link>
+              </li>
+
+              <li>
                 <form action={signOut}>
-                  <button className="ml-4 text-ct-dark-600">Logout</button>
+                  <button
+                    type="submit"
+                    className="text-ct-dark-600 hover:text-red-600"
+                  >
+                    Logout
+                  </button>
                 </form>
               </li>
             </>
           ) : (
             <>
               <li>
-                <Link href="/register" className="text-ct-dark-600">
+                <Link
+                  href="/register"
+                  className="text-ct-dark-600 hover:underline"
+                >
                   Register
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="text-ct-dark-600">
+                <Link
+                  href="/login"
+                  className="text-ct-dark-600 hover:underline"
+                >
                   Login
                 </Link>
               </li>

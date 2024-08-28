@@ -43,7 +43,7 @@ export const RegisterForm = () => {
   };
 
   const input_style =
-    "form-control block w-full px-4 py-5 text-sm font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none";
+    "form-control block w-full px-4 py-3 text-sm font-normal text-gray-700 bg-white border border-gray-300 rounded-lg transition duration-300 ease-in-out focus:border-black focus:ring-0";
 
   return (
     <form onSubmit={handleSubmit(onSubmitHandler)}>
@@ -100,8 +100,7 @@ export const RegisterForm = () => {
       </div>
       <button
         type="submit"
-        style={{ backgroundColor: `${isPending ? "#ccc" : "#3446eb"}` }}
-        className="inline-block px-7 py-4 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full"
+        className="inline-block px-7 py-4 bg-black text-white font-medium text-sm leading-snug uppercase rounded-lg shadow-md hover:bg-gray-800 hover:shadow-lg focus:bg-gray-800 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-900 active:shadow-lg transition duration-300 ease-in-out w-full"
         disabled={isPending}
       >
         {isPending ? "loading..." : "Sign Up"}

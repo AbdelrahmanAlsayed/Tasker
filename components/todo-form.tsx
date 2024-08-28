@@ -22,7 +22,7 @@ function FormContent({
         minLength={4}
         name="todo"
         required
-        placeholder={isEditing ? "Update your todo" : "Add a new todo"}
+        placeholder={isEditing ? "Update your task" : "Add a new task"}
         defaultValue={isEditing ? currentTodo?.task ?? "" : ""}
         className="border p-2 rounded-md w-full"
       />
