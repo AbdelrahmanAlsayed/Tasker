@@ -5,11 +5,12 @@ import { Trash2, Pencil } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { useState } from "react";
 import { TodoOptimisticUpdate } from "./todo-list";
+import toaster from "./toaster";
 
 export function TodoItem({
   todo,
   optimisticUpdate,
-  setTodoToEdit
+  setTodoToEdit,
 }: {
   todo: Todo;
   optimisticUpdate: TodoOptimisticUpdate;
@@ -46,7 +47,12 @@ export function TodoItem({
           onClick={async (e) => {
             e.preventDefault();
             optimisticUpdate({ action: "delete", todo });
-            await deleteTodo(todo.id);
+            try {
+              await deleteTodo(todo.id);
+              toaster.success("Task deleted successfully");
+            } catch (error) {
+              toaster.error("An error occurred while deleting the task");
+            }
           }}
           className="p-2 text-red-600 hover:text-red-800"
         >

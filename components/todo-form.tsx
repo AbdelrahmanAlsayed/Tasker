@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { TodoOptimisticUpdate } from "./todo-list";
 import { Todo } from "@/types/custom";
+import toaster from "./toaster";
 
 function FormContent({
   isEditing,
@@ -65,6 +66,8 @@ export function TodoForm({
               };
               optimisticUpdate({ action: "update", todo: updatedTodo });
               await updateTodo(updatedTodo);
+              toaster.success("Task updated successfully");
+
               setTodoToEdit(null);
             } else {
               const newTodo: Todo = {
@@ -76,6 +79,7 @@ export function TodoForm({
               };
               optimisticUpdate({ action: "create", todo: newTodo });
               await addTodo(data);
+              toaster.success("Task added  successfully");
             }
             formRef.current?.reset();
           }}

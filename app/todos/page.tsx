@@ -19,9 +19,9 @@ export default async function TodosPage() {
     .order("inserted_at", { ascending: false });
 
   return (
-    <section className="p-3 pt-6 max-w-2xl w-full flex flex-col gap-4">
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Todo s
+    <section className="p-3 pt-6 w-full flex flex-col gap-4">
+      <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">
+        mutate your tasks...
       </h1>
       <TodoList todos={todos ?? []} />
     </section>
