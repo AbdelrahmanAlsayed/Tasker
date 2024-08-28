@@ -1,7 +1,7 @@
 "use client";
 import { deleteTodo, updateTodo } from "@/app/todos/actions";
 import { Todo } from "@/types/custom";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { useState } from "react";
 import { TodoOptimisticUpdate } from "./todo-list";
@@ -9,23 +9,11 @@ import { TodoOptimisticUpdate } from "./todo-list";
 export function TodoItem({
   todo,
   optimisticUpdate,
+  setTodoToEdit
 }: {
   todo: Todo;
   optimisticUpdate: TodoOptimisticUpdate;
-}) {
-  return (
-    <form>
-      <TodoCard optimisticUpdate={optimisticUpdate} todo={todo} />
-    </form>
-  );
-}
-
-export function TodoCard({
-  todo,
-  optimisticUpdate,
-}: {
-  todo: Todo;
-  optimisticUpdate: TodoOptimisticUpdate;
+  setTodoToEdit: (todo: Todo) => void;
 }) {
   const { pending } = useFormStatus();
   const [checked, setChecked] = useState(todo.is_complete);
@@ -64,6 +52,14 @@ export function TodoCard({
         >
           <Trash2 className="h-5 w-5" />
           <span className="sr-only">Delete Todo</span>
+        </button>
+        <button
+          disabled={pending}
+          onClick={() => setTodoToEdit(todo)}
+          className="p-2 text-blue-600 hover:text-blue-800"
+        >
+          <Pencil className="h-5 w-5" />
+          <span className="sr-only">Edit Todo</span>
         </button>
       </div>
     </div>

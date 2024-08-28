@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
+import createSupabaseServerClient from "@/lib/supabase/server";
 import { signOut } from "@/app/_actions";
 
 const Header = async () => {
-  const supabase = await createClient();
+  const supabase = await createSupabaseServerClient();
 
   const {
     data: { user },

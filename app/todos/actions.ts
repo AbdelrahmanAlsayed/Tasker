@@ -1,11 +1,11 @@
 "use server";
 
 import { Todo } from "@/types/custom";
-import { createClient } from "@/utils/supabase/server";
+import createSupabaseServerClient from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export async function addTodo(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createSupabaseServerClient();
   const text = formData.get("todo") as string | null;
 
   if (!text) {
@@ -14,9 +14,10 @@ export async function addTodo(formData: FormData) {
 
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (userError || !user) {
     throw new Error("User is not logged in");
   }
 
@@ -33,12 +34,14 @@ export async function addTodo(formData: FormData) {
 }
 
 export async function deleteTodo(id: number) {
-  const supabase = createClient();
+  const supabase = await createSupabaseServerClient();
+
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (userError || !user) {
     throw new Error("User is not logged in");
   }
 
@@ -55,12 +58,14 @@ export async function deleteTodo(id: number) {
 }
 
 export async function updateTodo(todo: Todo) {
-  const supabase = createClient();
+  const supabase = await createSupabaseServerClient();
+
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (userError || !user) {
     throw new Error("User is not logged in");
   }
 

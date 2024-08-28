@@ -1,12 +1,18 @@
 "use client";
-import { addTodo } from "@/app/todos/actions";
-import { Send } from "lucide-react";
+import { addTodo, updateTodo } from "@/app/todos/actions";
+import { Send, Pencil } from "lucide-react";
 import { useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { TodoOptimisticUpdate } from "./todo-list";
 import { Todo } from "@/types/custom";
 
-function FormContent() {
+function FormContent({
+  isEditing,
+  currentTodo,
+}: {
+  isEditing: boolean;
+  currentTodo: Todo | null;
+}) {
   const { pending } = useFormStatus();
   return (
     <>
@@ -15,17 +21,19 @@ function FormContent() {
         minLength={4}
         name="todo"
         required
-        placeholder="Add a new todo"
+        placeholder={isEditing ? "Update your todo" : "Add a new todo"}
+        defaultValue={isEditing ? currentTodo?.task ?? "" : ""}
         className="border p-2 rounded-md w-full"
       />
       <button
         type="submit"
-        size="icon"
         className="min-w-10 p-2 bg-blue-500 text-white rounded-md"
         disabled={pending}
       >
         <Send className="h-5 w-5" />
-        <span className="sr-only">Submit Todo</span>
+        <span className="sr-only">
+          {isEditing ? "Update Todo" : "Submit Todo"}
+        </span>
       </button>
     </>
   );
@@ -33,10 +41,16 @@ function FormContent() {
 
 export function TodoForm({
   optimisticUpdate,
+  todoToEdit,
+  setTodoToEdit,
 }: {
   optimisticUpdate: TodoOptimisticUpdate;
+  todoToEdit: Todo | null;
+  setTodoToEdit: (todo: Todo | null) => void;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const isEditing = todoToEdit !== null;
+
   return (
     <div className="bg-white rounded-md shadow-md">
       <div className="p-3">
@@ -44,19 +58,29 @@ export function TodoForm({
           ref={formRef}
           className="flex gap-4"
           action={async (data) => {
-            const newTodo: Todo = {
-              id: -1,
-              inserted_at: "",
-              user_id: "",
-              task: data.get("todo") as string,
-              is_complete: false,
-            };
-            optimisticUpdate({ action: "create", todo: newTodo });
-            await addTodo(data);
+            if (isEditing && todoToEdit) {
+              const updatedTodo = {
+                ...todoToEdit,
+                task: data.get("todo") as string,
+              };
+              optimisticUpdate({ action: "update", todo: updatedTodo });
+              await updateTodo(updatedTodo);
+              setTodoToEdit(null);
+            } else {
+              const newTodo: Todo = {
+                id: -1,
+                inserted_at: "",
+                user_id: "",
+                task: data.get("todo") as string,
+                is_complete: false,
+              };
+              optimisticUpdate({ action: "create", todo: newTodo });
+              await addTodo(data);
+            }
             formRef.current?.reset();
           }}
         >
-          <FormContent />
+          <FormContent isEditing={isEditing} currentTodo={todoToEdit} />
         </form>
       </div>
     </div>

@@ -2,7 +2,6 @@
 
 import createSupabaseServerClient from "@/lib/supabase/server";
 import { CreateUserInput, LoginUserInput } from "@/lib/user-schema";
-import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export async function signUpWithEmailAndPassword({
@@ -33,7 +32,13 @@ export async function signInWithEmailAndPassword(data: LoginUserInput) {
 }
 
 export async function signOut() {
-  const supabase = createClient();
-  await supabase.auth.signOut();
+  const supabase = await createSupabaseServerClient();
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Error signing out:", error.message);
+    throw new Error("Sign-out failed. Please try again.");
+  }
   redirect("/login");
 }

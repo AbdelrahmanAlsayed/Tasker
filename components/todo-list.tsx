@@ -3,6 +3,7 @@ import { TodoItem } from "./todo-item";
 import { TodoForm } from "./todo-form";
 import { Todo } from "@/types/custom";
 import { useOptimistic } from "react";
+import { useState } from "react";
 
 export type Action = "delete" | "update" | "create";
 
@@ -32,19 +33,24 @@ export function TodoList({ todos }: { todos: Array<Todo> }) {
     todos,
     todoReducer
   );
+  const [todoToEdit, setTodoToEdit] = useState<Todo | null>(null);
+
   return (
     <>
-      <TodoForm optimisticUpdate={optimisticTodosUpdate} />
+      <TodoForm
+        optimisticUpdate={optimisticTodosUpdate}
+        todoToEdit={todoToEdit}
+        setTodoToEdit={setTodoToEdit}
+      />
       <div className="w-full flex flex-col gap-4">
-        {optimisticTodos?.map((todo) => {
-          return (
-            <TodoItem
-              optimisticUpdate={optimisticTodosUpdate}
-              todo={todo}
-              key={todo.id}
-            />
-          );
-        })}
+        {optimisticTodos?.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            optimisticUpdate={optimisticTodosUpdate}
+            setTodoToEdit={setTodoToEdit}
+          />
+        ))}
       </div>
     </>
   );
