@@ -51,7 +51,7 @@ export const LoginForm = () => {
     supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+         redirectTo: "https://tasker-mauve-zeta.vercel.app/auth/callback",
       },
     });
   };
