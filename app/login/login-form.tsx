@@ -47,14 +47,26 @@ export const LoginForm = () => {
     });
   };
 
-  const loginWithGitHub = () => {
-    supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: {
-         redirectTo: "https://tasker-mauve-zeta.vercel.app/auth/callback",
-      },
-    });
-  };
+ const loginWithGitHub = async () => {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "github",
+    options: {
+      redirectTo: "https://tasker-mauve-zeta.vercel.app/auth/callback",
+    },
+  });
+
+  if (error) {
+    console.error("OAuth login error:", error.message);
+    toaster.error("OAuth login failed. Please try again.");
+    return;
+  }
+
+  // Redirect the user to the provider's URL
+  if (data?.url) {
+    window.location.href = data.url;
+  }
+};
+
 
   const input_style =
     "form-control block w-full px-4 py-3 text-sm font-normal text-gray-700 bg-white border border-gray-300 rounded-lg transition duration-300 ease-in-out focus:border-black focus:ring-0";
