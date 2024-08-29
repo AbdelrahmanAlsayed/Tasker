@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <section className="p-20 flex flex-col items-center justify-center bg-white">
@@ -7,11 +9,11 @@ export default function Home() {
         tasks. Stay on top of your responsibilities and boost your productivity
         with an intuitive and user-friendly interface.
       </p>
-      <a href="/register">
+      <Link href="/register">
         <button className="px-4 py-2 bg-black text-white rounded-md transition-colors duration-300 hover:bg-gray-700 hover:text-gray-100">
           Get Started
         </button>
-      </a>
+      </Link>
     </section>
   );
 }
