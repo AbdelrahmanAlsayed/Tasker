@@ -13,7 +13,7 @@ export async function oAuthSignIn(provider: Provider) {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      // redirectTo: `https://taskerappp.vercel.app/auth/callback`,
+      redirectTo: `https://taskerappp.vercel.app/auth/callback`,
       // redirectTo: `http://localhost:3000/auth/callback`,
     },
   });
