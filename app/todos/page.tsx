@@ -1,9 +1,9 @@
 import { TodoList } from "@/components/todo-list";
-import createSupabaseServerClient from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function TodosPage() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

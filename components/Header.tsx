@@ -1,77 +1,46 @@
-import Link from "next/link";
-import createSupabaseServerClient from "@/lib/supabase/server";
 import { signOut } from "@/app/_actions";
+import { createClient } from "@/utils/supabase/server";
+import Link from "next/link";
+import ProfileLink from "./ProfileLink";
 
-const Header = async () => {
-  const supabase = await createSupabaseServerClient();
+export default async function Header() {
+  const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   return (
-    <header className="border-b border-gray-200 bg-white shadow-md">
-      <nav className="container mx-auto flex justify-between items-center py-4 px-6 md:px-8">
-        <div>
-          <Link href="/" className="text-ct-dark-600 text-2xl font-semibold">
-            Tasker
-          </Link>
-        </div>
-        <ul className="flex items-center space-x-4">
-          {user ? (
+    <header className="z-10 sticky top-0 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 max-w-screen-2xl items-center">
+        <nav className="flex items-center space-x-4 lg:space-x-6">
+          <a className="mr-6 flex items-center space-x-2" href="/">
+            <span className="font-bold">Tasker</span>
+          </a>
+          <Link href="/todos">Todos</Link>
+        </nav>
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          {user !== null ? (
             <>
-              <li>
-                <Link
-                  href="/todos"
-                  className="text-ct-dark-600 hover:underline text-[17px]"
+              <form className="flex items-center gap-2">
+                <p>{user.email}</p>
+                <button
+                  type="submit"
+                  formAction={signOut}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  Todos
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/profile"
-                  className="text-ct-dark-600 hover:underline"
-                >
-                  Profile
-                </Link>
-              </li>
-
-              <li>
-                <form action={signOut}>
-                  <button
-                    type="submit"
-                    className="text-ct-dark-600 hover:text-red-600"
-                  >
-                    Logout
-                  </button>
-                </form>
-              </li>
+                  Sign Out
+                </button>
+              </form>
+              <ProfileLink />
             </>
           ) : (
-            <>
-              <li>
-                <Link
-                  href="/register"
-                  className="text-ct-dark-600 hover:underline"
-                >
-                  Register
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/login"
-                  className="text-ct-dark-600 hover:underline"
-                >
-                  Login
-                </Link>
-              </li>
-            </>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              <Link href="/login">Sign In</Link>
+            </button>
           )}
-        </ul>
-      </nav>
+        </div>
+      </div>
     </header>
   );
-};
-
-export default Header;
+}

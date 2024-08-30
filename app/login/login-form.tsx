@@ -1,129 +1,91 @@
 "use client";
 
-import { LoginUserInput, loginUserSchema } from "@/lib/user-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { signInWithEmailAndPassword } from "../_actions";
-import useSupabaseClient from "@/lib/supabase/client";
-import toaster from "@/components/toaster";
-import { Github } from "lucide-react";
+import GitHubAuth from "./GitHubAuth";
 
-export const LoginForm = () => {
+export default function Login() {
   const router = useRouter();
-  const [error, setError] = useState("");
-  const [isPending, startTransition] = useTransition();
-  const supabase = useSupabaseClient();
+  const [error, setError] = useState<string | null>(null);
 
-  const methods = useForm<LoginUserInput>({
-    resolver: zodResolver(loginUserSchema),
-  });
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
 
-  const {
-    reset,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = methods;
-
-  const onSubmitHandler: SubmitHandler<LoginUserInput> = async (values) => {
-    startTransition(async () => {
-      const result = await signInWithEmailAndPassword(values);
-
-      const { error } = JSON.parse(result);
-      if (error?.message) {
-        setError(error.message);
-        toaster.error(error.message);
-        console.log("Error message", error.message);
-        reset({ password: "" });
-        return;
-      }
-
-      setError("");
-      toaster.success("successfully logged in");
-
-      router.push("/");
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.get("email"),
+        password: formData.get("password"),
+      }),
     });
-  };
 
- const loginWithGitHub = async () => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "github",
-    options: {
-      redirectTo: "https://tasker-mauve-zeta.vercel.app/auth/callback",
-    },
-  });
-
-  if (error) {
-    console.error("OAuth login error:", error.message);
-    toaster.error("OAuth login failed. Please try again.");
-    return;
+    if (response.ok) {
+      router.push("/");
+    } else {
+      const result = await response.json();
+      setError(result.error || "Unknown error occurred");
+    }
   }
-
-  // Redirect the user to the provider's URL
-  if (data?.url) {
-    window.location.href = data.url;
-  }
-};
-
-
-  const input_style =
-    "form-control block w-full px-4 py-3 text-sm font-normal text-gray-700 bg-white border border-gray-300 rounded-lg transition duration-300 ease-in-out focus:border-black focus:ring-0";
 
   return (
-    <form onSubmit={handleSubmit(onSubmitHandler)}>
-      {error && (
-        <p className="text-center bg-red-200 text-red-700 py-4 mb-6 rounded-lg">
-          {error}
-        </p>
-      )}
-      <div className="mb-6">
-        <input
-          type="email"
-          {...register("email")}
-          placeholder="Email address"
-          className={`${input_style}`}
-        />
-        {errors["email"] && (
-          <span className="text-red-500 text-xs pt-1 block">
-            {errors["email"]?.message as string}
-          </span>
-        )}
-      </div>
-      <div className="mb-6">
-        <input
-          type="password"
-          {...register("password")}
-          placeholder="Password"
-          className={`${input_style}`}
-        />
-        {errors["password"] && (
-          <span className="text-red-500 text-xs pt-1 block">
-            {errors["password"]?.message as string}
-          </span>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="inline-block px-7 py-4 bg-black text-white font-medium text-sm leading-snug uppercase rounded-lg shadow-md hover:bg-gray-800 hover:shadow-lg focus:bg-gray-800 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-900 active:shadow-lg transition duration-300 ease-in-out w-full"
-        disabled={isPending}
-      >
-        {isPending ? "loading..." : "Sign In"}
-      </button>
+    <section className="h-[calc(100vh-57px)] flex justify-center items-center">
+      <div className="mx-auto max-w-sm bg-white shadow-md rounded-lg">
+        <div className="p-4 border-b">
+          <h2 className="text-2xl font-semibold">Login</h2>
+          <p className="text-gray-600">
+            Enter your email below to login to your account
+          </p>
+        </div>
+        <div className="p-4 flex flex-col gap-4">
+          <form id="login-form" onSubmit={handleSubmit} className="grid gap-4">
+            <div className="grid gap-2">
+              <label htmlFor="email" className="font-medium">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                className="border p-2 rounded"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label htmlFor="password" className="font-medium">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                minLength={6}
+                required
+                className="border p-2 rounded"
+              />
+            </div>
 
-      <div className="flex items-center my-4 before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
-        <p className="text-center font-semibold mx-4 mb-0">OR</p>
+            <button
+              type="submit"
+              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Login
+            </button>
+          </form>
+          {error && <p className="text-red-600">{error}</p>}
+          <GitHubAuth />
+          <div className="text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <a href="/register" className="underline text-blue-600">
+              Register
+            </a>
+          </div>
+        </div>
       </div>
-
-      <a
-        className="px-7 py-2 text-white bg-black font-medium text-sm leading-snug uppercase rounded-lg shadow-md hover:bg-gray-700 hover:shadow-lg focus:bg-gray-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-800 active:shadow-lg transition duration-300 ease-in-out w-full flex justify-center items-center"
-        onClick={loginWithGitHub}
-        role="button"
-      >
-        <Github />
-        Continue with GitHub
-      </a>
-    </form>
+    </section>
   );
-};
+}

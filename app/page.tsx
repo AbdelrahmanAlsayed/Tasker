@@ -1,6 +1,12 @@
-import Link from 'next/link';
+import HomePageButtons from "@/components/HomePageButtons";
+import { createClient } from "@/utils/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <section className="p-20 flex flex-col items-center justify-center bg-white">
       <h1 className="text-4xl font-bold mb-4 text-black">Tasker</h1>
@@ -9,11 +15,7 @@ export default function Home() {
         tasks. Stay on top of your responsibilities and boost your productivity
         with an intuitive and user-friendly interface.
       </p>
-      <Link href="/register">
-        <button className="px-4 py-2 bg-black text-white rounded-md transition-colors duration-300 hover:bg-gray-700 hover:text-gray-100">
-          Get Started
-        </button>
-      </Link>
+      <HomePageButtons isAuthenticated={!!user} />
     </section>
   );
 }

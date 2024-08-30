@@ -1,44 +1,32 @@
 "use server";
 
-import createSupabaseServerClient from "@/lib/supabase/server";
-import { CreateUserInput, LoginUserInput } from "@/lib/user-schema";
 import { redirect } from "next/navigation";
 
-export async function signUpWithEmailAndPassword({
-  data,
-  emailRedirectTo,
-}: {
-  data: CreateUserInput;
-  emailRedirectTo?: string;
-}) {
-  const supabase = await createSupabaseServerClient();
-  const result = await supabase.auth.signUp({
-    email: data.email,
-    password: data.password,
+import { createClient } from "@/utils/supabase/server";
+import { Provider } from "@supabase/supabase-js";
+
+export async function oAuthSignIn(provider: Provider) {
+  if (!provider) {
+    return redirect("/login?message=No provider selected");
+  }
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
     options: {
-      emailRedirectTo,
+      // redirectTo: `https://taskerappp.vercel.app/auth/callback`,
+      // redirectTo: `http://localhost:3000/auth/callback`,
     },
   });
-  return JSON.stringify(result);
-}
 
-export async function signInWithEmailAndPassword(data: LoginUserInput) {
-  const supabase = await createSupabaseServerClient();
-  const result = await supabase.auth.signInWithPassword({
-    email: data.email,
-    password: data.password,
-  });
-  return JSON.stringify(result);
+  if (error) {
+    redirect("/login");
+  }
+
+  return redirect(data.url);
 }
 
 export async function signOut() {
-  const supabase = await createSupabaseServerClient();
-
-  const { error } = await supabase.auth.signOut();
-
-  if (error) {
-    console.error("Error signing out:", error.message);
-    throw new Error("Sign-out failed. Please try again.");
-  }
+  const supabase = createClient();
+  await supabase.auth.signOut();
   redirect("/login");
 }

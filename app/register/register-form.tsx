@@ -1,110 +1,109 @@
 "use client";
 
-import { CreateUserInput, createUserSchema } from "@/lib/user-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { signUpWithEmailAndPassword } from "../_actions";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
 import toaster from "@/components/toaster";
 
-export const RegisterForm = () => {
-  const [isPending, startTransition] = useTransition();
+export default function RegisterForm() {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
-  const methods = useForm<CreateUserInput>({
-    resolver: zodResolver(createUserSchema),
-  });
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
 
-  const {
-    reset,
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = methods;
-
-  const onSubmitHandler: SubmitHandler<CreateUserInput> = (values) => {
-    startTransition(async () => {
-      const result = await signUpWithEmailAndPassword({
-        data: values,
-        emailRedirectTo: `${location.origin}/auth/callback`,
-      });
-      const { error } = JSON.parse(result);
-      if (error?.message) {
-        toaster.error(error.message);
-        console.log("Error message", error.message);
-        reset({ password: "" });
-        return;
-      }
-      toaster.success("registered successfully");
-
-      router.push("/login");
+    const response = await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.get("email"),
+        password: formData.get("password"),
+        fullName: formData.get("fullName"),
+      }),
     });
-  };
 
-  const input_style =
-    "form-control block w-full px-4 py-3 text-sm font-normal text-gray-700 bg-white border border-gray-300 rounded-lg transition duration-300 ease-in-out focus:border-black focus:ring-0";
+    if (response.ok) {
+      router.push("/login");
+      toaster.success(
+        "Registration successful! Please verify your email and log in."
+      );
+    } else {
+      const { error } = await response.json();
+      setError(error);
+      toaster.error("An error occurred. Please try again.");
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmitHandler)}>
-      <div className="mb-6">
-        <input
-          {...register("name")}
-          placeholder="Name"
-          className={`${input_style}`}
-        />
-        {errors["name"] && (
-          <span className="text-red-500 text-xs pt-1 block">
-            {errors["name"]?.message as string}
-          </span>
-        )}
+    <section className="h-[calc(100vh-57px)] flex justify-center items-center">
+      <div className="mx-auto max-w-sm bg-white shadow-md rounded-lg">
+        <div className="p-4 border-b">
+          <h2 className="text-2xl font-semibold">Register</h2>
+          <p className="text-gray-600">Create a new account</p>
+        </div>
+        <div className="p-4 flex flex-col gap-4">
+          <form
+            id="register-form"
+            onSubmit={handleSubmit}
+            className="grid gap-4"
+          >
+            <div className="grid gap-2">
+              <label htmlFor="fullName" className="font-medium">
+                Full Name
+              </label>
+              <input
+                id="fullName"
+                name="fullName"
+                type="text"
+                placeholder="John Doe"
+                required
+                className="border p-2 rounded"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label htmlFor="email" className="font-medium">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                className="border p-2 rounded"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label htmlFor="password" className="font-medium">
+                Password
+              </label>
+              <input
+                minLength={6}
+                name="password"
+                id="password"
+                type="password"
+                required
+                className="border p-2 rounded"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Register
+            </button>
+          </form>
+          {error && <p className="text-red-600">{error}</p>}
+          <div className="text-center text-sm">
+            Already have an account?{" "}
+            <a href="/login" className="underline text-blue-600">
+              Login
+            </a>
+          </div>
+        </div>
       </div>
-      <div className="mb-6">
-        <input
-          type="email"
-          {...register("email")}
-          placeholder="Email address"
-          className={`${input_style}`}
-        />
-        {errors["email"] && (
-          <span className="text-red-500 text-xs pt-1 block">
-            {errors["email"]?.message as string}
-          </span>
-        )}
-      </div>
-      <div className="mb-6">
-        <input
-          type="password"
-          {...register("password")}
-          placeholder="Password"
-          className={`${input_style}`}
-        />
-        {errors["password"] && (
-          <span className="text-red-500 text-xs pt-1 block">
-            {errors["password"]?.message as string}
-          </span>
-        )}
-      </div>
-      <div className="mb-6">
-        <input
-          type="password"
-          {...register("passwordConfirm")}
-          placeholder="Confirm Password"
-          className={`${input_style}`}
-        />
-        {errors["passwordConfirm"] && (
-          <span className="text-red-500 text-xs pt-1 block">
-            {errors["passwordConfirm"]?.message as string}
-          </span>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="inline-block px-7 py-4 bg-black text-white font-medium text-sm leading-snug uppercase rounded-lg shadow-md hover:bg-gray-800 hover:shadow-lg focus:bg-gray-800 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gray-900 active:shadow-lg transition duration-300 ease-in-out w-full"
-        disabled={isPending}
-      >
-        {isPending ? "loading..." : "Sign Up"}
-      </button>
-    </form>
+    </section>
   );
-};
+}

@@ -1,11 +1,11 @@
 "use server";
 
 import { Todo } from "@/types/custom";
-import createSupabaseServerClient from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { createClient } from "@/utils/supabase/server";
 
 export async function addTodo(formData: FormData) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createClient();
   const text = formData.get("todo") as string | null;
 
   if (!text) {
@@ -34,7 +34,7 @@ export async function addTodo(formData: FormData) {
 }
 
 export async function deleteTodo(id: number) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -58,7 +58,7 @@ export async function deleteTodo(id: number) {
 }
 
 export async function updateTodo(todo: Todo) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
