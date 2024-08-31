@@ -1,35 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 import GitHubAuth from "./GitHubAuth";
+import toaster from "@/components/toaster";
 
-export default function Login() {
+const LoginForm: React.FC = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const { mutate } = useAuth("login");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: formData.get("email"),
-        password: formData.get("password"),
-      }),
-    });
-
-    if (response.ok) {
-      router.push("/");
-    } else {
-      const result = await response.json();
-      setError(result.error || "Unknown error occurred");
-    }
-  }
+    mutate(
+      { email, password },
+      {
+        onSuccess: () => {
+          router.push("/");
+          toaster.success("Welcome To Tasker.");
+        },
+        onError: (error: Error) => {
+          setError(error.message || "Registration failed");
+          toaster.error("An error occurred. Please try again.");
+        },
+      }
+    );
+  };
 
   return (
     <section className="h-[calc(100vh-57px)] flex justify-center items-center">
@@ -71,7 +72,7 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               Login
             </button>
@@ -88,4 +89,6 @@ export default function Login() {
       </div>
     </section>
   );
-}
+};
+
+export default LoginForm;

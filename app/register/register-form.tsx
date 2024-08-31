@@ -1,47 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth"; // Adjust the import path as needed
+import GitHubAuth from "../login/GitHubAuth";
 import toaster from "@/components/toaster";
 
-export default function RegisterForm() {
+const RegisterForm: React.FC = () => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const { mutate } = useAuth("register");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const fullName = formData.get("fullName") as string;
 
-    const response = await fetch("/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: formData.get("email"),
-        password: formData.get("password"),
-        fullName: formData.get("fullName"),
-      }),
-    });
-
-    if (response.ok) {
-      router.push("/login");
-      toaster.success(
-        "Registration successful! Please verify your email and log in."
-      );
-    } else {
-      const { error } = await response.json();
-      setError(error);
-      toaster.error("An error occurred. Please try again.");
-    }
-  }
+    mutate(
+      { email, password, fullName },
+      {
+        onSuccess: () => {
+          router.push("/login");
+          toaster.success(
+            "Registration successful! Please verify your email and log in."
+          );
+        },
+        onError: (error: Error) => {
+          setError(error.message || "Registration failed");
+          toaster.error("An error occurred. Please try again.");
+        },
+      }
+    );
+  };
 
   return (
     <section className="h-[calc(100vh-57px)] flex justify-center items-center">
       <div className="mx-auto max-w-sm bg-white shadow-md rounded-lg">
         <div className="p-4 border-b">
           <h2 className="text-2xl font-semibold">Register</h2>
-          <p className="text-gray-600">Create a new account</p>
+          <p className="text-gray-600">
+            Enter your details below to create an account
+          </p>
         </div>
         <div className="p-4 flex flex-col gap-4">
           <form
@@ -80,22 +81,24 @@ export default function RegisterForm() {
                 Password
               </label>
               <input
-                minLength={6}
-                name="password"
                 id="password"
+                name="password"
                 type="password"
+                minLength={6}
                 required
                 className="border p-2 rounded"
               />
             </div>
+
             <button
               type="submit"
-              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               Register
             </button>
           </form>
           {error && <p className="text-red-600">{error}</p>}
+          <GitHubAuth />
           <div className="text-center text-sm">
             Already have an account?{" "}
             <a href="/login" className="underline text-blue-600">
@@ -106,4 +109,6 @@ export default function RegisterForm() {
       </div>
     </section>
   );
-}
+};
+
+export default RegisterForm;
