@@ -62,7 +62,7 @@ export function TodoForm({
           <button
             type="submit"
             title="submit the task"
-            className="min-w-10 p-2 bg-blue-500 text-white rounded-md"
+            className="bg-black text-white transition duration-300 rounded-lg py-2 px-6 border border-transparent hover:bg-white hover:border-black hover:text-black min-w-10"
           >
             {isEditing ? "Edit the Task" : "Add a new Task"}
           </button>

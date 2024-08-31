@@ -18,38 +18,31 @@ export default async function ProfilePage() {
     return dateString ? new Date(dateString).toLocaleDateString() : "N/A";
   };
 
+  const userData = {
+    Name: user.user_metadata.full_name,
+    Email: user.email,
+    Username: user.user_metadata.user_name,
+    Provider: user.app_metadata.provider,
+    "Last Sign-In": formatDate(user.last_sign_in_at),
+    "Created At": formatDate(user.created_at),
+    "Confirmed At": formatDate(user.confirmed_at),
+    "Email Confirmed At": formatDate(user.email_confirmed_at),
+  };
+
   return (
-    <section className="p-6 md:p-12 flex flex-col items-center">
-      <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-semibold mb-6 text-center">
+    <section className="flex justify-center items-center h-[calc(100vh-180px)]">
+      <div className="border shadow-md p-10  rounded-2xl">
+        <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">
           Profile Page
         </h1>
-        <div className="flex flex-col space-y-4">
-          <p className="text-lg font-semibold">
-            {user.user_metadata.full_name}
-          </p>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Username:</strong> {user.user_metadata.user_name}
-          </p>
-          <p>
-            <strong>Provider:</strong> {user.app_metadata.provider}
-          </p>
-          <p>
-            <strong>Last Sign-In:</strong> {formatDate(user.last_sign_in_at)}
-          </p>
-          <p>
-            <strong>Created At:</strong> {formatDate(user.created_at)}
-          </p>
-          <p>
-            <strong>Confirmed At:</strong> {formatDate(user.confirmed_at)}
-          </p>
-          <p>
-            <strong>Email Confirmed At:</strong>{" "}
-            {formatDate(user.email_confirmed_at)}
-          </p>
+        <div className="flex flex-col space-y-6">
+          {Object.entries(userData).map(([label, value]) =>
+            value ? (
+              <p key={label}>
+                <strong>{label}:</strong> {value}
+              </p>
+            ) : null
+          )}
         </div>
       </div>
     </section>

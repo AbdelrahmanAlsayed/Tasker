@@ -35,8 +35,8 @@ export function TodoItem({
 
   return (
     <div
-      className={`w-full bg-white p-4 rounded-md shadow-md ${
-        checked ? "bg-gray-100" : ""
+      className={`w-full  p-4 rounded-md shadow-md ${
+        checked ? "bg-[#f7f7f7]" : "bg-white"
       }`}
     >
       <div className="flex items-start gap-3 p-3">
@@ -45,23 +45,23 @@ export function TodoItem({
             type="checkbox"
             checked={checked}
             onChange={handleCheck}
-            className="form-checkbox h-5 w-5 text-blue-600"
+            className="form-checkbox h-5 w-5 text-black border-black accent-black focus:ring-black rounded-md"
           />
         </span>
         <p className="flex-1 pt-2 min-w-0 break-words">{todo.task}</p>
         <button
           onClick={() => setTodoToEdit(todo)}
-          className="p-2 text-blue-600 hover:text-blue-800"
+          title="Edit the task"
+          className="p-2 text-blue-600 hover:text-blue-800 flex items-center justify-center"
         >
-          <Pencil className="h-5 w-5" />
-          <span className="sr-only">Edit Todo</span>
+          <Pencil className="h-5 w-5 transition-transform duration-500 ease-in-out transform hover:rotate-[360deg]" />
         </button>
         <button
+          title="delete the task"
           onClick={handleDelete}
           className="p-2 text-red-600 hover:text-red-800"
         >
-          <Trash2 className="h-5 w-5" />
-          <span className="sr-only">Delete Todo</span>
+          <Trash2 className="h-5 w-5 transition-transform duration-500 ease-in-out transform hover:rotate-[360deg]" />
         </button>
       </div>
     </div>
