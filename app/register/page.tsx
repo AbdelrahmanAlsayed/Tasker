@@ -1,6 +1,17 @@
+import { createClient } from "@/utils/supabase/server";
 import RegisterForm from "./register-form";
+import { redirect } from "next/navigation";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect("/");
+  }
+
   return (
     <section className="p-20">
       <div className="container mx-auto px-6 py-12 h-full flex justify-center items-center">
