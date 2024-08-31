@@ -1,53 +1,31 @@
 "use client";
+
 import { TodoItem } from "./todo-item";
 import { TodoForm } from "./todo-form";
 import { Todo } from "@/types/custom";
-import { useOptimistic } from "react";
-import { useState } from "react";
-
-export type Action = "delete" | "update" | "create";
-
-export function todoReducer(
-  state: Array<Todo>,
-  { action, todo }: { action: Action; todo: Todo }
-) {
-  switch (action) {
-    case "delete":
-      return state.filter(({ id }) => id !== todo.id);
-    case "update":
-      return state.map((t) => (t.id === todo.id ? todo : t));
-    case "create":
-      return [todo, ...state];
-    default:
-      return state;
-  }
-}
-
-export type TodoOptimisticUpdate = (action: {
-  action: Action;
-  todo: Todo;
-}) => void;
+import { useState, useEffect } from "react";
 
 export function TodoList({ todos }: { todos: Array<Todo> }) {
-  const [optimisticTodos, optimisticTodosUpdate] = useOptimistic(
-    todos,
-    todoReducer
-  );
+  const [todoList, setTodoList] = useState<Array<Todo>>(todos);
   const [todoToEdit, setTodoToEdit] = useState<Todo | null>(null);
+
+  useEffect(() => {
+    setTodoList(todos);
+  }, [todos]);
 
   return (
     <>
       <TodoForm
-        optimisticUpdate={optimisticTodosUpdate}
+        setTodoList={setTodoList}
         todoToEdit={todoToEdit}
         setTodoToEdit={setTodoToEdit}
       />
       <div className="w-full flex flex-col gap-4">
-        {optimisticTodos?.map((todo) => (
+        {todoList.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}
-            optimisticUpdate={optimisticTodosUpdate}
+            setTodoList={setTodoList}
             setTodoToEdit={setTodoToEdit}
           />
         ))}

@@ -20,9 +20,6 @@ export default async function TodosPage() {
 
   return (
     <section className="p-3 pt-6 w-full flex flex-col gap-4  container mx-auto">
-      <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">
-        mutate your tasks...
-      </h1>
       <TodoList todos={todos ?? []} />
     </section>
   );
