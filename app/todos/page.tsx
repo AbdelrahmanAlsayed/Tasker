@@ -1,6 +1,7 @@
 import { TodoList } from "@/components/todo-list";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import RealTimeTodos from "./real-time-todos";
 
 export default async function TodosPage() {
   const supabase = await createClient();
@@ -20,7 +21,7 @@ export default async function TodosPage() {
 
   return (
     <section className="p-3 pt-6 w-full flex flex-col gap-4  container mx-auto">
-      <TodoList todos={todos ?? []} />
+      <RealTimeTodos serverTodos={todos ?? []} />
     </section>
   );
 }

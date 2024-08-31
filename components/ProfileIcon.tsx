@@ -3,7 +3,7 @@
 import { signOut } from "@/app/_actions";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { User } from "lucide-react"; // Import the User icon from lucide-react
+import { User, List, UserCircle, LogOut } from "lucide-react";
 import toaster from "./toaster";
 
 export default function ProfileIcon() {
@@ -26,6 +26,7 @@ export default function ProfileIcon() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -58,25 +59,28 @@ export default function ProfileIcon() {
             <li>
               <Link
                 href="/todos"
-                className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                className="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-700"
               >
+                <List className="w-4 h-4 mr-2" aria-hidden="true" />
                 Tasks
               </Link>
             </li>
             <li>
               <Link
                 href="/profile"
-                className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                className="flex items-center px-4 py-2 hover:bg-gray-100 text-gray-700"
               >
+                <UserCircle className="w-4 h-4 mr-2" aria-hidden="true" />
                 Profile
               </Link>
             </li>
           </ul>
           <div className="py-2 border-t border-gray-200">
             <button
-              className="block w-full px-4 py-2 text-sm text-red-600 hover:bg-red-100 text-left"
+              className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-100 text-left"
               onClick={handleSignOut}
             >
+              <LogOut className="w-4 h-4 mr-2" aria-hidden="true" />
               Sign out
             </button>
           </div>
