@@ -46,7 +46,7 @@ export async function deleteTodo(id: number) {
   }
 
   const { error } = await supabase.from("todos").delete().match({
-    user_id: user.id,
+    // user_id: user.id,
     id: id,
   });
 
@@ -70,7 +70,7 @@ export async function updateTodo(todo: Todo) {
   }
 
   const { error } = await supabase.from("todos").update(todo).match({
-    user_id: user.id,
+    // user_id: user.id,
     id: todo.id,
   });
 
