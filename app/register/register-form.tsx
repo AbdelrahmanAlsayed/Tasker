@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import toaster from "@/components/toaster";
 import AuthLink from "@/components/AuthLinks";
 import { BeatLoader } from "react-spinners";
+import GitHubAuth from "../login/GitHubAuth";
 
 const RegisterForm: React.FC = () => {
   const router = useRouter();
@@ -90,7 +91,7 @@ const RegisterForm: React.FC = () => {
 
         <button
           type="submit"
-          className="bg-black text-white transition duration-300 rounded-lg py-2 px-6 mt-4 border hover:bg-white hover:border-black hover:text-black"
+          className="bg-black mb-3 text-white transition duration-300 rounded-lg py-2 px-6 mt-4 border hover:bg-white hover:border-black hover:text-black"
           disabled={status === "pending"}
         >
           {status === "pending" ? (
@@ -101,6 +102,7 @@ const RegisterForm: React.FC = () => {
         </button>
       </form>
       {error && <p className="text-red-600 mt-4">{error}</p>}
+      <GitHubAuth />
       <AuthLink
         text="Already have an account? "
         linkText="Login"
